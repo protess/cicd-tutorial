@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowEventBinding
+metadata:
+  name: cicd-tutorial-eb
+  namespace: argo
+spec:
+  event:
+    selector: payload.ref == "refs/heads/dev" && discriminator == "cicd-tutorial"
+  submit:
+    arguments:
+      parameters:
+        - name: tag
+          valueFrom:
+            event: payload.head_commit.id [0:7]
+        - name: application-name
+          valueFrom:
+            event: '''build-test'''
+        - name: package-name
+          valueFrom:
+            event: '''build-test'''
+    workflowTemplateRef:
+      name: cicd-tutorial

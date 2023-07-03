@@ -54,16 +54,16 @@ spec:
             template: git-ops-update
             dependencies:
               - build-push-image-cicd-tutorial
-          - name: argocd-sync
-            arguments:
-              parameters:
-                - name: application-name
-                  value: cicd-tutorial
-            templateRef:
-              name: argocd-sync
-              template: argocd-sync
-            dependencies:
-              - git-ops-update
+          # - name: argocd-sync
+          #   arguments:
+          #     parameters:
+          #       - name: application-name
+          #         value: cicd-tutorial
+          #   templateRef:
+          #     name: argocd-sync
+          #     template: argocd-sync
+          #   dependencies:
+          #     - git-ops-update
 
     - name: git-clone
       container:
