@@ -14,9 +14,9 @@ spec:
             event: payload.head_commit.id [0:7]
         - name: application-name
           valueFrom:
-            event: '''build-test'''
+            event: '''cicd-tutorial'''
         - name: package-name
           valueFrom:
-            event: '''build-test'''
+            event: '''cicd-tutorial'''
     workflowTemplateRef:
       name: cicd-tutorial
