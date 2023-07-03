@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slide
+  labels:
+    app: slide
+spec:
+  selector:
+    matchLabels:
+      app: slide
+  template:
+    metadata:
+      labels:
+        app: slide
+    spec:
+      containers:
+      - name: slide
+        image: slide
+        ports:
+        - containerPort: 80
+

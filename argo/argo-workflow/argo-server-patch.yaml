@@ -1,0 +1,15 @@
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - server
+        - --secure=false
+        - --auth-mode=server
+        name: argo-server
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 2746
+            scheme: HTTP
+          
