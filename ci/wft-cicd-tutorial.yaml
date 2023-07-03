@@ -4,10 +4,10 @@ metadata:
   name: cicd-tutorial
   namespace: argo
 spec:
-  ttlStrategy:
-    secondsAfterCompletion: 10 # Time to live after workflow is completed, replaces ttlSecondsAfterFinished
-    secondsAfterSuccess: 5     # Time to live after workflow is successful
-    secondsAfterFailure: 5     # Time to live after workflow fails
+  # ttlStrategy:
+  #   secondsAfterCompletion: 10 # Time to live after workflow is completed, replaces ttlSecondsAfterFinished
+  #   secondsAfterSuccess: 5     # Time to live after workflow is successful
+  #   secondsAfterFailure: 5     # Time to live after workflow fails
   arguments:
     parameters:
       - name: branch
@@ -15,7 +15,7 @@ spec:
       - name: gitops-branch
         value: deploy
       - name: tag
-        value: v1.0.0
+        value: 12345
       - name: application-name
         value: cicd-tutorial
   volumes:
@@ -25,7 +25,7 @@ spec:
 
   # uncomment to pull image from private repo      
   # imagePullSecrets:
-  #   - name: registry-credentials
+  #   - name: registry-credential
 
   entrypoint: main
 
@@ -83,10 +83,10 @@ spec:
         name: ''
         image: gcr.io/kaniko-project/executor:v1.9.1-debug
         args:
-          - '--dockerfile=/work/src/{{workflow.parameters.tag}}/Dockerfile'
-          - '--context=dir:///work/src/{{workflow.parameters.tag}}'
+          - '--dockerfile=/work/src/{{workflow.parameters.tag}}/slides/Dockerfile'
+          - '--context=dir:///work/src/{{workflow.parameters.tag}}/slides'
           - >-
-            --destination=localhost/cicd-tutorial:{{workflow.parameters.tag}}
+            --destination=protess/cicd-tutorial:{{workflow.parameters.tag}}
         workingDir: /work/src/{{workflow.parameters.tag}}
         volumeMounts:
           - name: kaniko-secret
@@ -96,7 +96,7 @@ spec:
       volumes:
         - name: kaniko-secret
           secret:
-            secretName: registry-credentials
+            secretName: registry-credential
             items:
               - key: .dockerconfigjson
                 path: config.json
@@ -104,13 +104,13 @@ spec:
     - name: git-ops-update
       container:
         name: ''
-        image: protess/toolbox:v1.0.0
+        image: protess/alpine-toolbox
         command:
           - sh
           - '-c'
         args:
           - >-
-            git config --global user.email "protess@gmail.com" && git config --global user.name "protess" git clone -v -b {{workflow.parameters.gitops-branch}} https://github.com/protess/cicd-tutorial.git {{workflow.parameters.tag}} && cd {{workflow.parameters.tag}} && git status && ls && yq e -i '.ci_cicd-tutorial_admin.dev.version = "{{workflow.parameters.tag}}"' ci-cd/cicd-tutorial/values.yaml && git add -A && git commit -m 'Release on dev {{workflow.parameters.tag}}' && git push -f https://$GITHUB_PAT@github.com/protess/cicd-tutorial.git
+            git config --global user.email "protess@gmail.com" && git config --global user.name "protess" && git clone -v -b {{workflow.parameters.gitops-branch}} https://github.com/protess/cicd-tutorial.git {{workflow.parameters.tag}} && cd {{workflow.parameters.tag}} && git status && ls && yq e -i '.spec.template.spec.containers[0].image = "protess/cicd-tutorial:{{workflow.parameters.tag}}"' cd/cicd-tutorial.yaml && git add -A && git commit -m 'Release on dev {{workflow.parameters.tag}}' && git push -f https://$GITHUB_PAT@github.com/protess/cicd-tutorial.git
         workingDir: /work/gitops/{{workflow.parameters.tag}}
         env:
           - name: GITHUB_PAT
@@ -125,7 +125,7 @@ spec:
     - name: cleanup
       container:
         name: ''
-        image: protess/toolbox:v1.0.0
+        image: protess/alpine-toolbox
         command:
           - sh
           - '-c'

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cicd-tutorial
-          image: protess/slides:v1.0.0
+          image: protess/cicd-tutorial:12345
           ports:
             - containerPort: 80
 ---

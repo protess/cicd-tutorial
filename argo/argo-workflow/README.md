@@ -16,10 +16,14 @@ kubectl port-forward svc/argocd-server -n argo 9090:2746
 ```
 
 ### Other config
+
+- Follow below guide to create config.json file
+[kaniko docker hub config](https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub)
+
 ```
 # create docker login secret
 kubectl create secret generic registry-credential \
-    --from-file=.dockerconfigjson=<path/to/.docker/config.json> \
+    --from-file=.dockerconfigjson=<path/to/config.json> \
     --type=kubernetes.io/dockerconfigjson
 
 # create github pat secret
